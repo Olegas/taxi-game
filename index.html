@@ -15,14 +15,34 @@
             justify-content: center;
         }
 
-        canvas {
-            width: 50%;
+        canvas, #bg {
+            width: 640px;
+            height: 640px;
         }
 
         .logs {
             position: absolute;
             left: 0;
             top: 0;
+        }
+
+        .hidden {
+            opacity: 0;
+            position: absolute;
+        }
+
+        #bg {
+            background: url('/images/background.svg') center center no-repeat;
+            position: relative;
+        }
+
+        #t {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 164px;
+            width: 100%;
+            background: red;
         }
     </style>
 </head>
@@ -31,7 +51,19 @@
         <pre id="fps"></pre>
         <pre id="log"></pre>
     </div>
-    <canvas id="canvas" width="640" height="480"></canvas>
+    <img src="/images/forward.svg" id="car" class="hidden" />
+    <img src="/images/car1.svg" id="car0" class="hidden" />
+    <img src="/images/car2.svg" id="car1" class="hidden" />
+    <img src="/images/car5.svg" id="car2" class="hidden" />
+    <div id="bg">
+        <canvas id="canvas" width="640" height="640"></canvas>
+    </div>
+    <script>
+        // This is a app-wide settings
+        const lanes = 6;
+        const roadSize = 300;
+        const roadOffset = 164;
+    </script>
     <script src="BaseObject.js"></script>
     <script src="Road.js"></script>
     <script src="Controller.js"></script>
@@ -39,27 +71,6 @@
     <script src="Obstacle.js"></script>
     <script src="World.js"></script>
     <script src="CollisionDetector.js"></script>
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const controller = new Controller();
-        const cDetector = new CollisionDetector();
-        const road = new Road();
-        const car = new Car(controller);
-        const world = new World(ctx, controller, cDetector, {
-            after: (world) => {
-                if (Math.random() > 0.96) {
-                    world.add(new Obstacle());
-                }
-                if (!world.objects.has(car)) return 'stop';
-            }
-        });
-
-
-        world.add(road);
-        world.add(car);
-
-        world.run();
-    </script>
+    <script src="App.js"></script>
 </body>
 </html>

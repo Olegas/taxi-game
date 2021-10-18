@@ -1,20 +1,24 @@
 class Obstacle  extends BaseObject {
 
+    kindMap = {
+        0: { w: 102, h: 44},
+        1: { w: 95, h: 43},
+        2: { w: 72, h: 38},
+    }
+
     constructor() {
         super();
-        this.lane = Math.round(Math.random() * 5);
+        this.lane = Math.round(Math.random() * 4);
         this.x = 580;
-        this.d = 20;
         this.speed = Math.random() * 300 >> 0; // pix/sec
+        this.kind = Math.random() * 1 >> 0;
     }
 
     get position() {
-        const laneW = (ctx.canvas.height - 20 * 2) / 5;
         return {
             x: this.x,
-            y: 20 + this.lane * laneW + (laneW - this.d) / 2,
-            w: this.d,
-            h: this.d
+            lane: this.lane,
+            ...this.kindMap[this.kind]
         };
     }
 
@@ -24,12 +28,12 @@ class Obstacle  extends BaseObject {
     }
 
     draw(ctx) {
-        const {x, y, w, h} = this.position;
-        ctx.fillRect(x, y, w, h);
+        const {w, h} = this.position;
+        ctx.drawImage(document.getElementById(`car${this.kind}`), 0, 0, w, h);
     }
 
     after() {
-        if (this.x < 0) return 'dead';
+        if (this.x < -96) return 'dead';
     }
 
     toString() {

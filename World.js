@@ -4,6 +4,7 @@ class World {
     speed = 10; // pixels/second
 
     constructor(ctx, controller, collisionDetector, callbacks) {
+        this.laneW = roadSize / lanes;
         this.callbacks = callbacks;
         this.collisionDetector = collisionDetector;
         this.ctx = ctx;
@@ -47,8 +48,8 @@ class World {
         requestAnimationFrame((time) => {
             this.tFPS[this.tFPS.length === 0 ? 0 : 1] = time;
             this.frameCounter++;
-            const { canvas: { width, height }} = ctx;
-            ctx.clearRect(0, 0, width, height);
+            const { canvas: { width, height }} = this.ctx;
+            this.ctx.clearRect(0, 0, width, height);
             if (this.t) {
                 const dT = time - this.t;
                 const dA = this.controller.dA;
@@ -69,7 +70,12 @@ class World {
                 });
                 const intersections = this.collisionDetector.detect(this.objects);
                 intersections.forEach((i) => this.objects.delete(i));
-                this.objects.forEach((o) => o.draw(this.ctx));
+                this.objects.forEach((o) => {
+                    const {x, lane, h} = o.position;
+                    this.ctx.translate(x, roadOffset + this.laneW * lane + (lane > 2 ? 15 : 0) - h / 4);
+                    o.draw(this.ctx);
+                    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                });
             }
             this.t = time;
             this.log.textContent = `Time: ${this.t}\nAcceleration: ${this.a}\nSpeed: ${this.speed}\n`;
