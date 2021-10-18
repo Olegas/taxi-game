@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body, canvas {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            width: 50%;
+        }
+
+        .logs {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="logs">
+        <pre id="fps"></pre>
+        <pre id="log"></pre>
+    </div>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script src="BaseObject.js"></script>
+    <script src="Road.js"></script>
+    <script src="Controller.js"></script>
+    <script src="Car.js"></script>
+    <script src="Obstacle.js"></script>
+    <script src="World.js"></script>
+    <script src="CollisionDetector.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const controller = new Controller();
+        const cDetector = new CollisionDetector();
+        const road = new Road();
+        const car = new Car(controller);
+        const world = new World(ctx, controller, cDetector, {
+            after: (world) => {
+                if (Math.random() > 0.96) {
+                    world.add(new Obstacle());
+                }
+                if (!world.objects.has(car)) return 'stop';
+            }
+        });
+
+
+        world.add(road);
+        world.add(car);
+
+        world.run();
+    </script>
+</body>
+</html>
