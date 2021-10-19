@@ -1,7 +1,7 @@
 const fps = 60;
 
 class World {
-    speed = 10; // pixels/second
+    speed = 0; // pixels/second
 
     constructor(ctx, controller, collisionDetector, callbacks) {
         this.laneW = roadSize / lanes;

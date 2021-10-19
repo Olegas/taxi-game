@@ -1,5 +1,4 @@
 const dim = 20;
-const num = 4;
 
 class Road extends BaseObject  {
     constructor() {
@@ -11,7 +10,7 @@ class Road extends BaseObject  {
 
     tick(delegate) {
         const { dX } = delegate(0);
-        this.offset = (this.offset + dX) % (dim * num);
+        this.offset = (this.offset - dX) % dim;
     }
 
     get position() {
@@ -23,25 +22,18 @@ class Road extends BaseObject  {
     }
 
     draw(ctx) {
-        /*const w = ctx.canvas.width;
-        const h = ctx.canvas.height;
-        ctx.fillStyle = 'black';
-        ctx.strokeStyle = 'black';
-        const offsetToNext = dim * num;
-        for(let i = 0; i < 2; i++) {
-            for(let j = -(num - 1); j < (w / dim) / num; j++) {
-                ctx.fillRect(this.offset + offsetToNext * j, i === 0 ? 0 : h - dim, dim, dim);
-            }
-        }*/
         ctx.strokeStyle = 'white';
+        ctx.save();
         ctx.setLineDash([5, 15]);
+        ctx.beginPath();
         for (let i = 1; i < lanes; i++) {
             if (i === 3) continue;
             const off = i > 3 ? 10 : 0;
-            ctx.moveTo(0,(roadSize / lanes) * i + off);
+            ctx.moveTo(-this.offset,(roadSize / lanes) * i + off);
             ctx.lineTo(ctx.canvas.width, (roadSize / lanes) * i + off);
         }
         ctx.stroke();
+        ctx.restore();
     }
 
     toString() {

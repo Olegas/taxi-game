@@ -6,19 +6,22 @@ class Obstacle  extends BaseObject {
         2: { w: 72, h: 38},
     }
 
-    constructor() {
+    constructor(lane) {
         super();
-        this.lane = Math.round(Math.random() * 4);
-        this.x = 580;
-        this.speed = Math.random() * 300 >> 0; // pix/sec
-        this.kind = Math.random() * 1 >> 0;
+        this.lane = lane;
+        this.kind = Math.random() * 2 >> 0;
+        this.x = 640 + this.kindMap[this.kind].w;
+        this.speed = ((lane < 3) ? 1 : -1) * (100 + Math.random() * 300 >> 0); // pix/sec
+        this.img = document.getElementById(`car${this.kind}`);
     }
 
     get position() {
+        const { w, h } = this.kindMap[this.kind]
         return {
             x: this.x,
             lane: this.lane,
-            ...this.kindMap[this.kind]
+            h,
+            w
         };
     }
 
@@ -29,14 +32,28 @@ class Obstacle  extends BaseObject {
 
     draw(ctx) {
         const {w, h} = this.position;
-        ctx.drawImage(document.getElementById(`car${this.kind}`), 0, 0, w, h);
+        let m = 1;
+        if (this.lane >= 3) {
+            m = -1;
+            ctx.save();
+            ctx.scale(-1, 1);
+        }
+        ctx.drawImage(this.img, 0, 0, m * w, h);
+        if (this.lane >= 3) {
+            ctx.restore();
+        }
     }
 
     after() {
-        if (this.x < -96) return 'dead';
+        const w = this.kindMap[this.kind].w;
+        if (this.lane < 3) {
+            if (this.x < -w) return 'dead';
+        } else {
+            if (this.x > 2 * 640 || this.x < -w) return 'dead';
+        }
     }
 
     toString() {
-        return `${super.toString()} Speed: ${this.speed}, Lane: ${this.lane}`;
+        return `${super.toString()} Speed: ${this.speed}, Lane: ${this.lane}, X: ${this.x}`;
     }
 }
